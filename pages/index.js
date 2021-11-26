@@ -1,16 +1,17 @@
-import styles from '../styles/Home.module.css'
+import styles from '../styles/Home.module.scss'
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import Image from 'next/image';
 import Wallet from '../artifacts/contracts/Wallet.sol/Wallet.json';
-
-const { projectID  } = require('../secrets.json');
+import logo from '../public/eth-logo.png';
 
 const Home = function() {
-    const [balance, setBalance] = useState(0);
+    const [balanceETH, setBalanceETH] = useState(0);
+    const [balanceUSD, setBalanceUSD] = useState(0);
     const [receive, setReceive] = useState(0);
     const [withdrawAddress, setWithdrawAddress] = useState('0x0000000000000000000000000000000000000000');
     const [sendAmount, setSendAmount] = useState(0);
-    const rinkebyAddress = '0x049391EC05379E3C2B7AC9B19B53F7162A95E44D';
+    const rinkebyWalletAddress = '0xF5Ba7438E71c360A57193E9874f5bC464BaF2f3E';
     
 
     const requestAccount = async () => {
@@ -19,20 +20,27 @@ const Home = function() {
     }
     requestAccount();
 
+    useEffect(() => {
+        getBalance();
+    }, []);
+
     const getBalance = async () => {
         if (typeof window.ethereum === 'undefined') return;
         const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const contract = new ethers.Contract(rinkebyAddress, Wallet.abi, provider);
+        const contract = new ethers.Contract(rinkebyWalletAddress, Wallet.abi, provider);
         const balance = await contract.getBalance();
-        const balanceInWei = ethers.utils.formatEther(balance);
-        setBalance(balanceInWei);
+        const balanceInETH = ethers.utils.formatEther(balance);
+        setBalanceETH(balanceInETH);
+        const ethPrice = await contract.getBalanceInUSD();
+        const balanceInUSD = ((balanceInETH * ethPrice) / 10 ** 8).toFixed(2);
+        setBalanceUSD(balanceInUSD);
     }
 
     const receiveETH = async (wei) => {
         if (typeof window.ethereum === 'undefined') return;
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract(rinkebyAddress, Wallet.abi, signer);
+        const contract = new ethers.Contract(rinkebyWalletAddress, Wallet.abi, signer);
         const tx = await contract.receiveMoney(wei, {value: wei});
     }
 
@@ -40,7 +48,7 @@ const Home = function() {
         if (typeof window.ethereum === 'undefined') return;
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract(rinkebyAddress, Wallet.abi, signer);
+        const contract = new ethers.Contract(rinkebyWalletAddress, Wallet.abi, signer);
         const tx = await contract.withdrawMoneyTo(address, wei);
     }
 
@@ -62,16 +70,34 @@ const Home = function() {
 
     return (
         <div className={styles.container}>
-            <h1>{balance} ETH</h1>
-            <button onClick={handleGetBalance}>Get Balance!</button>
-            <br />
-            <input type="number" onChange={handleReceiveInputChange} value={receive} />
-            <button onClick={handleReceive}>Receive ETH</button>
-            <br />
-            <input type="text" onChange={handleWithdrawAddressChange} />
-            <input type="number" onChange={handleSendAmountChange} />
-            <button onClick={handleSend}>Send ETH</button>
+            <div className={styles.wallet}>
+                <h1 className={styles.title}>eth wallet</h1>
+            <div className={styles.balance}>
+                <div className={styles.balanceLeft}>
+                    <Image className={styles.image} width='32px' height='32px' src={logo} alt='Ethereum logo logo'/>
+                    <h1>Ethereum <span>ETH</span></h1>
+                </div>
+                <div className={styles.balanceRight}>
+                    <h1>{balanceETH} ETH</h1>
+                    <span>{balanceUSD} USD</span>
+                </div>
+            </div>
+            <div className={styles.receive}>
+                <input className={styles.input} type="number" onChange={handleReceiveInputChange} value={receive} />
+                <button className={styles.button} onClick={handleReceive}>Receive ETH</button>
+            </div>
+            <div className={styles.send}>
+                <div className={styles.sendUpper}>
+                    <input className={styles.input} type="number" onChange={handleSendAmountChange} />
+                    <button className={styles.button} onClick={handleSend}>Send ETH</button>
+                </div>
+                <input className={`${styles.input} ${styles.inputLarge}`}
+                placeholder='copy in rinkeby address' type="text" onChange={handleWithdrawAddressChange} />
+            </div>
+            </div>
+            
         </div>
+        
     )
 }
 

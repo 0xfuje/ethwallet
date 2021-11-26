@@ -1,0 +1,129 @@
+$color-mono-dark: #343434;
+$color-mono-medium: #6c757d;
+$color-mono-light-2: #adb5bd;
+$color-mono-light-1: #f8f9fa;
+$color-mono-white: #fff;
+
+@mixin line {
+    left: 0;
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 1px;
+    background-color: $color-mono-light-2;
+}
+
+.container {
+    background-image: url("../public/eth-haikei.svg");
+    aspect-ratio: 16/9;
+    width: 100%;
+    height: 100vh;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.wallet {
+    margin: 0 auto;
+    transform: translateY(10rem);
+    width: 22.5rem;
+    background-color: #fff;
+    border-radius: 0.3rem;
+    padding: 2rem;
+}
+
+.title {
+    font-size: 18px;
+}
+
+.balance {
+    position: relative;
+    margin: 1rem 0;
+    padding: 0.25rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &Left {
+        display: flex;
+        align-items: center;
+        h1 {
+            color: $color-mono-dark;
+            font-size: 20px;
+        }
+        span {
+            font-size: 14px;
+            color: $color-mono-medium;
+            font-weight: 500;
+        }
+    }
+    &Right {
+        display: flex;
+        flex-direction: column;
+        h1 {
+            font-size: 18px;
+            color: $color-mono-dark;
+        }
+        span {
+            transform: translateY(-0.75rem);
+            margin-top: 0rem;
+            font-size: 14px;
+            color: $color-mono-medium;
+            font-weight: 500;
+        }
+    }
+    &::before {
+        @include line;
+        top: 0;
+    }
+    &::after {
+        @include line;
+        bottom: 0;
+    }
+}
+
+.button {
+    background-color: $color-mono-dark;
+    color: $color-mono-white;
+    width: 100px;
+    height: 30px;
+    border-radius: 0.2rem;
+    border: 0px solid;
+    font-weight: 500;
+    &:active {
+        transform: translateY(2px);
+    }
+}
+
+.input {
+    height: 30px;
+    width: 100px;
+    padding: 0.5rem;
+    color: $color-mono-dark;
+    background-color: $color-mono-light-1;
+    border: 0.5px solid $color-mono-medium;
+    border-radius: 0.2rem;
+    &Large {
+        width: 100%;
+    }
+}
+
+.receive {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0 2rem;
+    padding: 0.25rem 0;
+    &::after {
+        @include line;
+        bottom: -1rem;
+    }
+}
+
+.send {
+    margin: 1rem 0;
+    &Upper {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+}
